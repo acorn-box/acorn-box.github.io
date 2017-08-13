@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>textmud form</title>
+	<style>
+		@font-face {
+			font-family: 'fixedsys';
+			src: url('http://cfs.tistory.com/custom/blog/81/814207/skin/images/DungGeunMo.woff');
+		}
+		body {
+			width:1200px;
+			background-image: url('./mud_back.gif');
+			background-repeat: no-repeat;
+			background-position-x: 148px;
+			background-position-y: 15px;
+		}
+		body, textarea, input {
+			background-color : #000084;
+			color : white;
+			font-family: 'fixedsys';
+			font-size: 16px;
+		}
+		textarea{
+			border : none;
+			/border : solid 2px;
+		}
+		input{
+		background-color: black;
+		border : 0;
+		}
+		*:focus {
+			outline: none;
+		}
+		button {
+			visibility : hidden;
+			font-family: 'fixedsys';
+			font-size:16px;
+			background-color: #bbbbbb;
+			border: none;
+			color: black;
+			padding: 0px 10px 5px 10px;
+			text-decoration: none;
+			display: inline-block;
+			cursor: pointer;
+			box-shadow: 3px 3px 0 black;
+		}
+		button:hover {
+			background-color: #555555;
+			color:white;
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('button').click(function(){
+				var input = $('input[name="input"]').val();
+				fn_ajax(input);
+			});
+			$('input[name="input"]').keypress(function (e) {
+				var input = $('input[name="input"]').val();
+				if (e.which == 13){
+					if(input == "clear" || input == "cls"){ clear(); return;}
+					fn_ajax(input);
+					$('input[name="input"]').val("");
+				}
+			});
+		});
+		function autoscroll(tg){
+			//$('textarea')[0].scrollTop = $('textarea')[0].scrollHeight-$('textarea')[0].clientHeight
+			tg.scrollTop = tg.scrollHeight - tg.clientHeight;
+		}
+		function clear(){
+			$('textarea').val(">");
+			$('input[name="input"]').val("");
+			return;
+		}
+		function fn_ajax(input){
+			$.post("./mud.php",{
+				to:input
+			},
+			function(data,status){
+				if(data == "null") { end = 1; return false; }
+				//else $('textarea').append("\n"+data);//textarea 수정후에 출력이안됨
+				else {
+					$('textarea').val($('textarea').val() +input+"\n"+data+"\n\n>");
+					//$('textarea')[0].clientHeight //DOM으로 직접접근해야 scrollHeight를 받아올수잇움
+					autoscroll($('textarea')[0]);
+				}
+			});
+		}
+	</script>
+</head>
+<body><center><br><br><br><br><br><br>
+  <textarea name="screen" style="width:685px;" rows="20" spellcheck="false" readonly>></textarea><br><br>
+  <!--<div name="screen" contenteditable="true" style="width:50%; height:300px; margin:auto; overflow:auto;"></div><br> -->
+  <input name="input" type="text" style="width:630px;" autofocus><button type="button">Send</button>
+  <center>
+</body>
+</html>
